@@ -96,7 +96,7 @@ resource "aws_route_table_association" "pub-sub-2-association" {
 }
 
 resource "aws_launch_template" "lt-home" {
-    name = "lt-home"
+    name_prefix = "lt-home-"
     image_id = var.image_id
     key_name = var.key_name
     instance_type = var.instance_type
@@ -107,7 +107,7 @@ resource "aws_launch_template" "lt-home" {
 
 
 resource "aws_launch_template" "lt-laptop" {
-    name = "lt-laptop"
+    name_prefix = "lt-laptop-"
     image_id = var.image_id
     key_name = var.key_name
     instance_type = var.instance_type
@@ -118,7 +118,7 @@ resource "aws_launch_template" "lt-laptop" {
 
 
 resource "aws_launch_template" "lt-cloth" {
-    name = "lt-cloth"
+    name_prefix = "lt-cloth-"
     image_id = var.image_id
     key_name = var.key_name
     instance_type = var.instance_type
@@ -134,13 +134,14 @@ resource "aws_autoscaling_group" "asg-home" {
   min_size           = 1
   launch_template {
     id = aws_launch_template.lt-home.id
+    version = "$Latest"
   }
   target_group_arns = [aws_lb_target_group.tg-home.arn]
   vpc_zone_identifier = [
   aws_subnet.pub-sub-1.id,
   aws_subnet.pub-sub-2.id
 ]
-
+  wait_for_capacity_timeout = "0"
 }
 
 resource "aws_autoscaling_group" "asg-laptop" {
@@ -149,12 +150,14 @@ resource "aws_autoscaling_group" "asg-laptop" {
   min_size           = 1
   launch_template {
     id = aws_launch_template.lt-laptop.id
+    version = "$Latest"
   }
   target_group_arns = [aws_lb_target_group.tg-laptop.arn]
   vpc_zone_identifier = [
   aws_subnet.pub-sub-1.id,
   aws_subnet.pub-sub-2.id
 ]
+   wait_for_capacity_timeout = "0"
 }
 
 resource "aws_autoscaling_group" "asg-cloth" {
@@ -163,12 +166,14 @@ resource "aws_autoscaling_group" "asg-cloth" {
   min_size           = 1
   launch_template {
     id = aws_launch_template.lt-cloth.id
+    version = "$Latest"
   }
   target_group_arns = [aws_lb_target_group.tg-cloth.arn]
   vpc_zone_identifier = [
   aws_subnet.pub-sub-1.id,
   aws_subnet.pub-sub-2.id
 ]
+  wait_for_capacity_timeout = "0"
 }
 
 resource "aws_autoscaling_policy" "policy-home" {
@@ -268,7 +273,8 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-    type = "forword"
+    type = "forward"
+    target_group_arn = aws_lb_target_group.tg-home.arn
   }
 }
 
@@ -386,3 +392,7 @@ resource "aws_route53_record" "www" {
     evaluate_target_health = false
   }
 }
+
+
+
+

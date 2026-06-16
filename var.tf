@@ -23,3 +23,4 @@ variable "key_name" {
     default = t3.micro
    
 }
+
