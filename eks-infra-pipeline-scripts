@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    stages {
+        stage('Pull') {
+            steps {
+                git branch: 'main', url: 'https://github.com/sakshigawale2112/TERRAFORM-PROJECT.git'
+                
+            }
+        }
+    }
+}
+
+    stage{
+        stage('plan') {
+            sh '''plan
+                   terraform init
+                   terraform plan'''
+        }
+
+    }
+
+    stage{
+        stage('Apply') {
+            sh '''apply
+                  terraform apply -auto-approve'''
+        }
+
+    }
+
+    
