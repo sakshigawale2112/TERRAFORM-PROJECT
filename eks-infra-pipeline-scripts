@@ -8,10 +8,10 @@ pipeline {
             }
         }
     }
-}
-
-    stage{
+        
+    
         stage('plan') {
+            steps {
             sh '''plan
                    terraform init
                    terraform plan'''
@@ -19,12 +19,13 @@ pipeline {
 
     }
 
-    stage{
+    
         stage('Apply') {
+            steps {
             sh '''apply
                   terraform apply -auto-approve'''
         }
 
     }
 
-    
+}
